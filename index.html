@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profesorado de Inglés - Plan de Estudios 1.º Año</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React & ReactDOM CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <!-- Babel CDN (para interpretar JSX en el navegador) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background: white !important; color: black !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 transition-colors duration-200">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const SUBJECTS_DATA = [
+      {
+        id: 'taller-inicial',
+        title: 'Taller Inicial',
+        category: 'Talleres Prácticos',
+        period: 'Anual',
+        icon: 'GraduationCap',
+        color: 'from-blue-500 to-indigo-600',
+        badgeColor: 'bg-blue-100 text-blue-800',
+        description: 'Espacio introductorio enfocado en la ambientación universitaria y terciaria, normativas institucionales, técnicas de estudio en el nivel superior y alfabetización académica.',
+        focus: 'Desarrollar habilidades de autonomía, organización del estudio y comprensión de la dinámica de formación docente.',
+        topics: ['Reglamento de la Institución Superior y Régimen de Cursada', 'Técnicas de estudio y lectura comprensiva académica', 'Oficio de estudiante de nivel superior', 'Normativa institucional y derechos/deberes estudiantiles'],
+        videos: [
+          { name: 'Cómo estudiar en la universidad / terciario (Técnicas efectivas)', url: 'https://www.youtube.com/results?search_query=tecnicas+de+estudio+nivel+superior' },
+          { name: 'Lectura académica y toma de apuntes', url: 'https://www.youtube.com/results?search_query=lectura+academica+toma+de+apuntes' }
+        ],
+        links: [
+          { name: 'Infodocente / Portales Educativos', url: 'https://www.educ.ar' },
+          { name: 'Guía de Estrategias de Estudio Académico', url: 'https://scholar.google.com' }
+        ],
+        books: ['Manual de Orientación al Estudiante Terciario', 'El oficio de estudiar - Alicia Camilloni']
+      },
+      {
+        id: 'sujeto-desarrollo-cultura',
+        title: 'Sujeto, Desarrollo y Cultura',
+        category: 'Pedagógicas/Sociales',
+        period: '1.er Cuatrimestre',
+        icon: 'Users',
+        color: 'from-purple-500 to-pink-600',
+        badgeColor: 'bg-purple-100 text-purple-800',
+        description: 'Estudio de la psicología del desarrollo humano, la constitución del sujeto y la influencia de los contextos socioculturales en los procesos de aprendizaje.',
+        focus: 'Comprender cómo aprenden los niños, adolescentes y adultos, considerando la diversidad socio-cultural.',
+        topics: ['Teoría del Desarrollo Cognitivo de Jean Piaget', 'Teoría Sociocultural de Lev Vygotsky', 'Psicoanálisis e infancia: La construcción del sujeto', 'Subjetividades contemporáneas y cultura digital'],
+        videos: [
+          { name: 'Piaget y Vygotsky: Cuadro comparativo en 10 min', url: 'https://www.youtube.com/results?search_query=Piaget+vs+Vygotsky+psicologia+del+desarrollo' },
+          { name: 'Psicología Educacional: Construcción del Sujeto', url: 'https://www.youtube.com/results?search_query=constitucion+del+sujeto+psicologia+educacional' }
+        ],
+        links: [
+          { name: 'Redalyc / Artículos de Psicología del Desarrollo', url: 'https://www.redalyc.org' },
+          { name: 'Google Scholar (Búsqueda Vygotsky y Piaget)', url: 'https://scholar.google.com' }
+        ],
+        books: ['Seis estudios de Psicología - Jean Piaget', 'El desarrollo de los procesos psicológicos superiores - Lev Vygotsky']
+      },
+      {
+        id: 'culturas-comunidades-anglofonas-1',
+        title: 'Culturas de las Comunidades Anglófonas I',
+        category: 'Inglés Técnico/Contenido',
+        period: '1.er Cuatrimestre',
+        icon: 'Globe',
+        color: 'from-amber-500 to-red-600',
+        badgeColor: 'bg-amber-100 text-amber-800',
+        description: 'Recorrido por la historia, geografía, instituciones políticas y manifestaciones culturales de las sociedades de habla inglesa, principalmente Gran Bretaña y Estados Unidos.',
+        focus: 'Construir una perspectiva crítica del idioma inglés conectada a sus raíces históricas y multiculturales.',
+        topics: ['British History: Celtic, Roman & Anglo-Saxon Britain', 'The Norman Conquest & The Magna Carta (1066 - 1215)', 'US History: Native Americans, Early Colonies & Independence (1776)', 'Cultural Identity: Monarchy vs. Republic System'],
+        videos: [
+          { name: 'CrashCourse: US History & World History', url: 'https://www.youtube.com/results?search_query=CrashCourse+US+History+British+History' },
+          { name: 'BBC History: Story of Britain Documentary', url: 'https://www.youtube.com/results?search_query=BBC+History+Story+of+Britain' }
+        ],
+        links: [
+          { name: 'BBC History Portal', url: 'https://www.bbc.co.uk/history' },
+          { name: 'History.com Educational Articles', url: 'https://www.history.com' }
+        ],
+        books: ['An Illustrated History of Britain - David McDowall', 'An Outline of American History - US Dept of State']
+      },
+      {
+        id: 'sistema-educativo',
+        title: 'Sistema Educativo',
+        category: 'Pedagógicas/Sociales',
+        period: '2.º Cuatrimestre',
+        icon: 'FileText',
+        color: 'from-teal-500 to-emerald-600',
+        badgeColor: 'bg-teal-100 text-teal-800',
+        description: 'Análisis socio-histórico y jurídico del sistema educativo formal, su estructura, leyes nacionales y jurisdiccionales, y las políticas públicas en educación.',
+        focus: 'Entender el marco legal, político y organizativo en el que vas a desempeñarte como docente.',
+        topics: ['Surgimiento de los Estados Nacionales y los Sistemas Educativos', 'Ley de Educación Nacional 26.206 y estructura del sistema', 'Políticas de inclusión educativa y derecho a la educación', 'Transformaciones educativas recientes y reforma curricular'],
+        videos: [
+          { name: 'Historia del Sistema Educativo en la Argentina', url: 'https://www.youtube.com/results?search_query=historia+del+sistema+educativo+argentino' },
+          { name: 'Ley de Educación Nacional 26206 explicada', url: 'https://www.youtube.com/results?search_query=Ley+de+Educacion+Nacional+26206' }
+        ],
+        links: [
+          { name: 'Ministerio de Educación (Argentina / Normativas)', url: 'https://www.argentina.gob.ar/educacion' },
+          { name: 'Educ.ar Repositorio Pedagógico', url: 'https://www.educ.ar' }
+        ],
+        books: ['Historia de la Educación en la Argentina - Adriana Puiggrós', 'La escuela como máquina de educar - Pablo Pineau']
+      },
+      {
+        id: 'problematica-pedagogica',
+        title: 'Problemática Pedagógica',
+        category: 'Pedagógicas/Sociales',
+        period: '2.º Cuatrimestre',
+        icon: 'BookOpen',
+        color: 'from-cyan-500 to-blue-600',
+        badgeColor: 'bg-cyan-100 text-cyan-800',
+        description: 'Estudio de las teorías pedagógicas clásicas y contemporáneas. Reflexión crítica sobre la enseñanza, la relación docente-alumno y el rol de la escuela hoy.',
+        focus: 'Desarrollar una postura docente ética y crítica frente a los desafíos del aula actual.',
+        topics: ['La Pedagogía como disciplina: Orígenes con Comenio (Didáctica Magna)', 'Pedagogía Crítica y la obra de Paulo Freire', 'Transmisión del conocimiento, autoridad y poder pedagógico', 'Debates sobre la inclusión, diversidad y la escuela actual'],
+        videos: [
+          { name: 'Paulo Freire: Pedagogía del Oprimido (Resumen completo)', url: 'https://www.youtube.com/results?search_query=Paulo+Freire+Pedagogia+del+oprimido+resumen' },
+          { name: '¿Qué es la Pedagogía y corrientes pedagógicas?', url: 'https://www.youtube.com/results?search_query=corrientes+pedagogicas+explicacion' }
+        ],
+        links: [
+          { name: 'Filadd - Apuntes de Pedagogía', url: 'https://filadd.com' },
+          { name: 'Biblioteca Digital CLACSO (Pedagogía Crítica)', url: 'https://www.clacso.org.ar' }
+        ],
+        books: ['Pedagogía del Oprimido - Paulo Freire', 'Didáctica Magna - Juan Amós Comenio']
+      },
+      {
+        id: 'taller-lengua-cultura',
+        title: 'Taller de Lengua y Cultura',
+        category: 'Talleres Prácticos',
+        period: '2.º Cuatrimestre',
+        icon: 'Globe',
+        color: 'from-orange-500 to-amber-600',
+        badgeColor: 'bg-orange-100 text-orange-800',
+        description: 'Taller dinámico destinado a explorar manifestaciones culturales contemporáneas (literatura, cine, prensa) en idioma inglés para expandir el vocabulario idiomático.',
+        focus: 'Fusionar el aprendizaje práctico del lenguaje con la apreciación sociocultural de países anglófonos.',
+        topics: ['Media literacy: Analyzing news, podcasts, and articles in English', 'Short stories analysis and literary elements', 'Idioms, slang, and cultural expressions in context', 'Cross-cultural communication and global English (ELF)'],
+        videos: [
+          { name: 'BBC Learning English: Cultural English & News', url: 'https://www.youtube.com/user/bbclearningenglish' },
+          { name: 'TED Talks: Language & Culture Discussions', url: 'https://www.youtube.com/user/TEDtalksDirector' }
+        ],
+        links: [
+          { name: 'British Council Voices / Cultural Articles', url: 'https://www.britishcouncil.org' },
+          { name: 'The Guardian - Culture & Arts Section', url: 'https://www.theguardian.com' }
+        ],
+        books: ['Penguin Readers Level 4 & 5 (Graded Readers)', 'English World-Wide - Manfred Gorlach']
+      },
+      {
+        id: 'lengua-inglesa-1',
+        title: 'Lengua Inglesa, Normas y Usos Gramaticales I',
+        category: 'Inglés Técnico/Contenido',
+        period: 'Anual',
+        icon: 'Award',
+        color: 'from-emerald-500 to-teal-700',
+        badgeColor: 'bg-emerald-100 text-emerald-800',
+        description: 'La materia troncal del idioma. Profundiza en las reglas gramaticales complejas, la sintaxis, morfología y el uso formal del lenguaje de nivel avanzado.',
+        focus: 'Lograr precisión estructural y corrección lingüística para alcanzar niveles C1/C2 de dominio.',
+        topics: ['Advanced Verb Tenses, Aspect, and Modality', 'Passive Voice, Causatives, and Inversion', 'Relative Clauses, Conditional Sentences & Subjunctive', 'Cohesion, Coherence, and Complex Sentence Structures'],
+        videos: [
+          { name: 'English with Lucy: Advanced English Grammar', url: 'https://www.youtube.com/c/EnglishwithLucy' },
+          { name: 'BBC Learning English: Masterclass Series', url: 'https://www.youtube.com/results?search_query=BBC+Learning+English+Advanced+Grammar' }
+        ],
+        links: [
+          { name: 'Agenda Web (Miles de ejercicios gramaticales gratis)', url: 'https://agendaweb.org' },
+          { name: 'Cambridge English Advanced Practice', url: 'https://www.cambridgeenglish.org' }
+        ],
+        books: ['English Grammar in Use (Advanced) - Martin Hewings / Raymond Murphy', 'Practical English Usage - Michael Swan']
+      },
+      {
+        id: 'fonetica-fonologia-1',
+        title: 'Fonética y Fonología Inglesa I',
+        category: 'Inglés Técnico/Contenido',
+        period: 'Anual',
+        icon: 'Volume2',
+        color: 'from-violet-600 to-purple-800',
+        badgeColor: 'bg-violet-100 text-violet-800',
+        description: 'Estudio de la articulación de los sonidos del inglés, el sistema fonológico, la representación del Alfabeto Fonético Internacional (IPA) y la entonación.',
+        focus: 'Desarrollar una pronunciación clara y aprender la transcripción fonética broad.',
+        topics: ['International Phonetic Alphabet (IPA) for Vowels & Consonants', 'Articulatory Phonetics: Organs of speech & Place/Manner of articulation', 'Broad Phonetic Transcription practice', 'Word Stress, Strong/Weak forms, and Sentence Stress'],
+        videos: [
+          { name: 'Rachels English: American Pronunciation & IPA', url: 'https://www.youtube.com/c/rachelsenglish' },
+          { name: 'BBC Learning English: The Sounds of English (IPA)', url: 'https://www.youtube.com/results?search_query=BBC+Pronunciation+IPA' }
+        ],
+        links: [
+          { name: 'Interactive IPA Chart (Sounds & Symbols)', url: 'https://www.ipachart.com' },
+          { name: 'Tofoneticas / Transcriptor Fonético Online', url: 'https://tophonetics.com' }
+        ],
+        books: ['English Phonetics and Phonology: Reader (Ship or Sheep? An intermediate pronunciation course - Ann Baker)']
+      },
+      {
+        id: 'linguistica-general',
+        title: 'Lingüística General',
+        category: 'Inglés Técnico/Contenido',
+        period: 'Anual',
+        icon: 'BookOpen',
+        color: 'from-rose-500 to-red-700',
+        badgeColor: 'bg-rose-100 text-rose-800',
+        description: 'Ciencia del lenguaje humano. Explora cómo funcionan las lenguas como sistemas abstractos a través de las teorías fundamentales de autores clásicos.',
+        focus: 'Comprender la estructura, evolución y componentes teóricos del lenguaje.',
+        topics: ['Ferdinand de Saussure: Signo Lingüístico, Lengua vs. Habla, Sincronía vs. Diacronía', 'Noam Chomsky: Gramática Generativa, Competencia vs. Actuación', 'Roman Jakobson: Las 6 Funciones del Lenguaje', 'Ramas de la Lingüística: Morfología, Sintaxis, Semántica y Pragmática'],
+        videos: [
+          { name: 'Saussure y el Signo Lingüístico en 5 minutos', url: 'https://www.youtube.com/results?search_query=Saussure+signo+linguistico+explicacion' },
+          { name: 'Chomsky y el origen del lenguaje', url: 'https://www.youtube.com/results?search_query=Chomsky+gramatica+generativa+explicacion' }
+        ],
+        links: [
+          { name: 'Filadd / Apuntes de Lingüística General', url: 'https://filadd.com' },
+          { name: 'Google Scholar (Búsqueda Saussure y Jakobson)', url: 'https://scholar.google.com' }
+        ],
+        books: ['Curso de Lingüística General - Ferdinand de Saussure', 'El Lenguaje - Edward Sapir']
+      },
+      {
+        id: 'expresion-oral-escrita',
+        title: 'Taller de Expresión Oral y Escrita',
+        category: 'Talleres Prácticos',
+        period: 'Anual',
+        icon: 'Sparkles',
+        color: 'from-yellow-500 to-amber-700',
+        badgeColor: 'bg-yellow-100 text-yellow-800',
+        description: 'Espacio enfocado en la producción y expresión en inglés. Trabaja la oratoria, la argumentación oral, la redacción de ensayos académicos y artículos formales.',
+        focus: 'Ganar soltura al hablar frente a audiencias y dominar la escritura formal de ensayos.',
+        topics: ['Academic Essay Writing (Opinion, Contrast, Problem-Solution)', 'Paragraph Structure: Topic Sentence, Supporting & Concluding Sentences', 'Intonation & Debate Strategies', 'Peer Editing and Self-Correction techniques'],
+        videos: [
+          { name: 'How to write a 5-paragraph Academic Essay', url: 'https://www.youtube.com/results?search_query=how+to+write+an+academic+essay' },
+          { name: 'TED Talks: Improving Public Speaking & Communication', url: 'https://www.youtube.com/user/TEDtalksDirector' }
+        ],
+        links: [
+          { name: 'Purdue OWL (Purdue Online Writing Lab)', url: 'https://owl.purdue.edu' },
+          { name: 'Cambridge Writing & Improve', url: 'https://writeandimprove.com' }
+        ],
+        books: ['Great Writing 4: Great Essays - Keith S. Folse', 'Academic Writing for Graduate Students - John M. Swales']
+      },
+      {
+        id: 'taller-integrador',
+        title: 'Taller Integrador',
+        category: 'Talleres Prácticos',
+        period: 'Anual',
+        icon: 'FolderOpen',
+        color: 'from-blue-600 to-teal-600',
+        badgeColor: 'bg-blue-100 text-blue-800',
+        description: 'Espacio articulador que vincula los saberes teóricos de las materias pedagógicas con la práctica del idioma y la observación de la realidad escolar.',
+        focus: 'Integrar teoría y práctica a través de proyectos interdisciplinarios y trabajos de campo.',
+        topics: ['Proyectos de Investigación Educativa Escolar', 'Diseño de observaciones de clases y análisis de contexto', 'Articulación entre Lingüística, Lengua y Pedagogía', 'Elaboración de Portafolio Profesional de evidencias de aprendizaje'],
+        videos: [
+          { name: 'Cómo hacer una observación de clase pedagógica', url: 'https://www.youtube.com/results?search_query=observacion+de+clase+practica+docente' }
+        ],
+        links: [
+          { name: 'Infod / Instituto Nacional de Formación Docente', url: 'https://infd.educacion.gob.ar' }
+        ],
+        books: ['Investigación Acción en la Educación - John Elliott', 'La formación docente en debate - Gloria Edelstein']
+      }
+    ];
+
+    function App() {
+      const [completedTopics, setCompletedTopics] = useState(() => {
+        const saved = localStorage.getItem('profesorado_completed_topics');
+        return saved ? JSON.parse(saved) : {};
+      });
+
+      const [selectedCategory, setSelectedCategory] = useState('Todas');
+      const [searchQuery, setSearchQuery] = useState('');
+      const [activeSubject, setActiveSubject] = useState(SUBJECTS_DATA[0]);
+
+      useEffect(() => {
+        localStorage.setItem('profesorado_completed_topics', JSON.stringify(completedTopics));
+      }, [completedTopics]);
+
+      const toggleTopic = (topicId) => {
+        setCompletedTopics(prev => ({
+          ...prev,
+          [topicId]: !prev[topicId]
+        }));
+      };
+
+      const totalTopicsCount = SUBJECTS_DATA.reduce((acc, sub) => acc + sub.topics.length, 0);
+      const completedCount = Object.values(completedTopics).filter(Boolean).length;
+      const progressPercent = Math.round((completedCount / totalTopicsCount) * 100) || 0;
+
+      const filteredSubjects = SUBJECTS_DATA.filter(sub => {
+        const matchesCat = selectedCategory === 'Todas' || sub.category === selectedCategory;
+        const matchesSearch = sub.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              sub.description.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesCat && matchesSearch;
+      });
+
+      const exportBackup = () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(completedTopics, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `profesorado_progreso_${new Date().toISOString().slice(0,10)}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+      };
+
+      const importBackup = (e) => {
+        const fileReader = new FileReader();
+        if (e.target.files && e.target.files[0]) {
+          fileReader.readAsText(e.target.files[0], "UTF-8");
+          fileReader.onload = (event) => {
+            try {
+              const parsed = JSON.parse(event.target.result);
+              setCompletedTopics(parsed);
+              alert('¡Progreso importado con éxito!');
+            } catch (err) {
+              alert('Error al leer el archivo JSON.');
+            }
+          };
+        }
+      };
+
+      return (
+        <div class="min-h-screen bg-slate-50 text-slate-800 pb-12">
+          {/* Header */}
+          <header class="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white shadow-lg no-print">
+            <div class="max-w-7xl mx-auto px-4 py-8">
+              <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <span class="inline-block bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full mb-2 uppercase tracking-wider">
+                    Plan de Estudios Terciario • 1.º Año
+                  </span>
+                  <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Profesorado de Inglés</h1>
+                  <p class="text-blue-100 mt-1 text-sm md:text-base">Hub Interactivo de Recursos, Teoría y Seguimiento de Materias</p>
+                </div>
+                
+                {/* Progress Card */}
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 w-full md:w-72 shadow-inner">
+                  <div class="flex justify-between items-center text-sm mb-2 font-medium">
+                    <span>Progreso General</span>
+                    <span class="text-lg font-bold">{progressPercent}%</span>
+                  </div>
+                  <div class="w-full bg-black/20 rounded-full h-3 overflow-hidden">
+                    <div 
+                      class="bg-emerald-400 h-full rounded-full transition-all duration-500 ease-out"
+                      style={{ width: `${progressPercent}%` }}
+                    ></div>
+                  </div>
+                  <p class="text-xs text-blue-200 mt-2 text-right">{completedCount} de {totalTopicsCount} temas completados</p>
+                </div>
+              </div>
+
+              {/* Action Bar */}
+              <div class="mt-6 flex flex-wrap gap-3 pt-4 border-t border-white/10 text-xs md:text-sm">
+                <button onClick={exportBackup} class="bg-white/20 hover:bg-white/30 text-white font-medium px-3 py-1.5 rounded-lg transition">
+                  📥 Exportar Respaldo (JSON)
+                </button>
+                <label class="bg-white/20 hover:bg-white/30 text-white font-medium px-3 py-1.5 rounded-lg transition cursor-pointer">
+                  📤 Importar Respaldo
+                  <input type="file" accept=".json" onChange={importBackup} class="hidden" />
+                </label>
+                <button onClick={() => window.print()} class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-3 py-1.5 rounded-lg transition ml-auto">
+                  🖨️ Imprimir PDF / Avance
+                </button>
+              </div>
+            </div>
+          </header>
+
+          {/* Main Layout */}
+          <main class="max-w-7xl mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            {/* Left Sidebar: Subjects List */}
+            <div class="lg:col-span-5 space-y-4 no-print">
+              
+              {/* Filters */}
+              <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3">
+                <input 
+                  type="text"
+                  placeholder="Buscar materia o concepto..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <div class="flex flex-wrap gap-1.5">
+                  {['Todas', 'Inglés Técnico/Contenido', 'Pedagógicas/Sociales', 'Talleres Prácticos'].map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(cat)}
+                      class={`px-2.5 py-1 rounded-md text-xs font-medium transition ${
+                        selectedCategory === cat 
+                          ? 'bg-indigo-600 text-white' 
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Subject Cards */}
+              <div class="space-y-3 max-h-[700px] overflow-y-auto pr-1">
+                {filteredSubjects.map(subject => {
+                  const subCompleted = subject.topics.filter(t => completedTopics[`${subject.id}-${t}`]).length;
+                  const isSelected = activeSubject.id === subject.id;
+
+                  return (
+                    <div 
+                      key={subject.id}
+                      onClick={() => setActiveSubject(subject)}
+                      class={`p-4 rounded-xl border transition cursor-pointer ${
+                        isSelected 
+                          ? 'bg-white border-indigo-500 ring-2 ring-indigo-500/20 shadow-md' 
+                          : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm'
+                      }`}
+                    >
+                      <div class="flex justify-between items-start gap-2">
+                        <span class={`text-xs px-2 py-0.5 rounded font-medium ${subject.badgeColor}`}>
+                          {subject.period}
+                        </span>
+                        <span class="text-xs text-slate-400 font-medium">
+                          {subCompleted}/{subject.topics.length} temas
+                        </span>
+                      </div>
+
+                      <h3 class="font-bold text-slate-800 text-base mt-2">{subject.title}</h3>
+                      <p class="text-xs text-slate-500 line-clamp-2 mt-1">{subject.description}</p>
+                      
+                      <div class="w-full bg-slate-100 rounded-full h-1.5 mt-3 overflow-hidden">
+                        <div 
+                          class="bg-indigo-600 h-full transition-all duration-300" 
+                          style={{ width: `${(subCompleted / subject.topics.length) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Right Panel: Subject Detail */}
+            <div class="lg:col-span-7">
+              {activeSubject && (
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden sticky top-8">
+                  {/* Top Header Banner */}
+                  <div class={`bg-gradient-to-r ${activeSubject.color} p-6 text-white`}>
+                    <div class="flex justify-between items-center">
+                      <span class="bg-white/20 backdrop-blur-md text-white text-xs font-semibold px-2.5 py-1 rounded-md">
+                        {activeSubject.category}
+                      </span>
+                      <span class="bg-black/20 text-white text-xs px-2.5 py-1 rounded-md font-medium">
+                        {activeSubject.period}
+                      </span>
+                    </div>
+                    <h2 class="text-2xl font-bold mt-3">{activeSubject.title}</h2>
+                    <p class="text-white/90 text-sm mt-2 leading-relaxed">{activeSubject.description}</p>
+                  </div>
+
+                  <div class="p-6 space-y-6">
+                    {/* Focus Box */}
+                    <div class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-4">
+                      <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-900 mb-1">🎯 Enfoque de la Materia</h4>
+                      <p class="text-sm text-indigo-800 font-medium">{activeSubject.focus}</p>
+                    </div>
+
+                    {/* Checkable Key Topics */}
+                    <div>
+                      <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3">
+                        📋 Temas Clave & Lista de Chequeo
+                      </h4>
+                      <div class="space-y-2">
+                        {activeSubject.topics.map((topic) => {
+                          const topicKey = `${activeSubject.id}-${topic}`;
+                          const isDone = !!completedTopics[topicKey];
+
+                          return (
+                            <label 
+                              key={topic}
+                              class={`flex items-start gap-3 p-3 rounded-lg border transition cursor-pointer ${
+                                isDone 
+                                  ? 'bg-emerald-50/60 border-emerald-200 text-slate-600 line-through' 
+                                  : 'bg-slate-50 border-slate-200 text-slate-800 hover:bg-slate-100'
+                              }`}
+                            >
+                              <input 
+                                type="checkbox"
+                                checked={isDone}
+                                onChange={() => toggleTopic(topicKey)}
+                                class="mt-1 h-4 w-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"
+                              />
+                              <span class="text-sm font-medium leading-snug">{topic}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Resources: Videos */}
+                    <div>
+                      <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3">
+                        🎬 Videos y Canales Recomendados
+                      </h4>
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {activeSubject.videos.map((vid, idx) => (
+                          <a 
+                            key={idx} 
+                            href={vid.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            class="flex items-center gap-2 p-3 bg-slate-50 hover:bg-red-50 hover:border-red-200 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:text-red-700 transition"
+                          >
+                            <span class="text-red-500">▶</span>
+                            <span class="truncate">{vid.name}</span>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Resources: Web Links & Books */}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                      <div>
+                        <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">🌐 Sitios Web & Practica</h4>
+                        <ul class="space-y-1.5">
+                          {activeSubject.links.map((link, idx) => (
+                            <li key={idx}>
+                              <a 
+                                href={link.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                class="text-xs text-indigo-600 hover:underline font-medium flex items-center gap-1"
+                              >
+                                🔗 {link.name}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">📚 Bibliografía Clásica</h4>
+                        <ul class="space-y-1 text-xs text-slate-600">
+                          {activeSubject.books.map((book, idx) => (
+                            <li key={idx} class="flex items-start gap-1">
+                              <span>📖</span>
+                              <span>{book}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              )}
+            </div>
+
+          </main>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
